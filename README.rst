@@ -6,19 +6,6 @@ Ecoute
 .. image:: https://img.shields.io/pypi/v/ecoute.svg
         :target: https://pypi.python.org/pypi/ecoute
 
-.. image:: https://img.shields.io/travis/julien-duponchelle/ecoute.svg
-        :target: https://travis-ci.com/julien-duponchelle/ecoute
-
-.. image:: https://readthedocs.org/projects/ecoute/badge/?version=latest
-        :target: https://ecoute.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-.. image:: https://pyup.io/repos/github/julien-duponchelle/ecoute/shield.svg
-     :target: https://pyup.io/repos/github/julien-duponchelle/ecoute/
-     :alt: Updates
-
-
 
 Ecoute is a wrapper on OpenAPI Whisper API. It's provide support for long audio files.
 
