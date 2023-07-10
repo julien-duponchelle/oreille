@@ -2,7 +2,8 @@ import openai
 from pydub import AudioSegment
 from tempfile import NamedTemporaryFile
 
-def transcribe(model, audio_file, response_format="json", **kwargs):
+
+def transcribe(model, audio_file, response_format="json", audio_format="wav", **kwargs):
     """
     Transcribe the audio content to text.
     All arguments of openai.Audio.transcribe are supported
@@ -12,23 +13,21 @@ def transcribe(model, audio_file, response_format="json", **kwargs):
     :param prompt: An optional text to guide the model's style or continue a previous audio segment. The prompt should match the audio language.
     :param response_format: The format of the transcript output, in one of these options: json, text, srt, verbose_json, or vtt. (default json)
     :param language: The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency.
+    :param audio_format: The audio file format (mp3, wav, ...) default to wav, othert format require ffmpeg for other formats than wav
     """
-    audio = AudioSegment.from_file(audio_file)
+    audio = AudioSegment.from_file(audio_file, format=audio_format)
 
     chunk_duration = 10 * 60
 
-    if audio.duration_seconds > chunk_duration:
-        result = None
-        for slice in _slice(model, audio, chunk_duration, **kwargs):
-            if slice is None:
-                break
-            if result is None:
-                result = slice
-            else:
-                result = _merge(result, slice)
-        return _export(result, response_format)
-    else:
-        return openai.Audio.transcribe(model, audio_file, response_format=response_format, **kwargs)
+    result = None
+    for slice in _slice(model, audio, audio_format, chunk_duration, **kwargs):
+        if slice is None:
+            break
+        if result is None:
+            result = slice
+        else:
+            result = _merge(result, slice)
+    return _export(result, response_format)
 
 
 def _export(transcript, response_format):
@@ -41,12 +40,12 @@ def _export(transcript, response_format):
             f"{response_format} is not a supported format")
 
 
-def _slice(model, audio, chunk_duration, **kwargs):
+def _slice(model, audio, audio_format, chunk_duration, **kwargs):
     for slice in audio[::chunk_duration * 1000]:
-        with NamedTemporaryFile() as export:
-            slice.export(export)
+        with NamedTemporaryFile(suffix="." + audio_format) as export:
+            slice.export(export, format=audio_format)
             export.seek(0)
-            yield openai.Audio.transcribe(model, slice, **kwargs)
+            yield openai.Audio.transcribe(model, export, **kwargs)
 
 
 def _merge(o1, o2):

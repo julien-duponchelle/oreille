@@ -1,4 +1,4 @@
-"""Top-level package for Ecoute."""
+"""Top-level package for Écoute."""
 
 __author__ = """Julien Duponchelle"""
 __email__ = 'julien@duponchelle.info'

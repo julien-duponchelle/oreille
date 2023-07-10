@@ -37,7 +37,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
     ],
-    description="Ecoute is a wrapper on OpenAPI Whisper API. It's provide support for long audio files.",
+    description="Écoute is a wrapper on OpenAPI Whisper API. It's provide support for long audio files.",
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme + '\n\n' + history,

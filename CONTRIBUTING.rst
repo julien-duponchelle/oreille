@@ -38,8 +38,8 @@ and "help wanted" is open to whoever wants to implement it.
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-Ecoute could always use more documentation, whether as part of the
-official Ecoute docs, in docstrings, or even on the web in blog posts,
+Écoute could always use more documentation, whether as part of the
+official Écoute docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
