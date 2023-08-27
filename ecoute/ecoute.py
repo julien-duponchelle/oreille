@@ -2,6 +2,7 @@ import openai
 from pydub import AudioSegment
 from tempfile import NamedTemporaryFile
 from openai.openai_object import OpenAIObject
+from .export import segments_to_vtt, segments_to_srt
 
 
 def transcribe(model, audio_file, response_format="json", audio_format="wav", **kwargs):
@@ -44,6 +45,8 @@ def _export(transcript, response_format):
         return transcript.text
     elif response_format == "vtt":
         return segments_to_vtt(transcript.segments)
+    elif response_format == "srt":
+        return segments_to_srt(transcript.segments)
     else:
         raise NotImplementedError(f"{response_format} is not a supported format")
 
@@ -79,23 +82,3 @@ def _merge(o1, o2, timing):
         result.segments = segments
     return result
 
-
-def segments_to_vtt(segments):
-    """
-    Convert a list of segments to a VTT text
-
-    :param list segments: list of OpenAI segments
-    :return str: VTT text
-    """
-    out = "WEBVTT\n\n"
-    for segment in segments:
-        out += f"{segment['id']}\n"
-        out += f"{_seconds_to_vtt_time(segment['start'])} --> {_seconds_to_vtt_time(segment['end'])}\n"
-        out += f"{segment['text']}\n\n"
-
-    return out
-
-
-def _seconds_to_vtt_time(seconds):
-    # Output format: 00:00:00.000
-    return f"{int(seconds // 3600):02}:{int(seconds // 60):02}:{(seconds % 60):06.3f}"

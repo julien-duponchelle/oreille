@@ -163,36 +163,3 @@ def test_transcribe_text_long(mocker, long_empty_audio):
     )
 
     assert transcribe == "Hello World Bonjour le monde"
-
-
-def test_segment_to_vtt(openai_object):
-    segments = [
-        {
-            "id": 0,
-            "start": 0.0,
-            "end": 2.8000000000000003,
-            "text": "Hello World",
-        },
-        {
-            "id": 1,
-            "start": 2.9,
-            "end": 3.5,
-            "text": "Bonjour le monde",
-        },
-    ]
-
-    vtt = ecoute.segments_to_vtt(segments)
-    assert (
-        vtt
-        == """WEBVTT
-
-0
-00:00:00.000 --> 00:00:02.800
-Hello World
-
-1
-00:00:02.900 --> 00:00:03.500
-Bonjour le monde
-
-"""
-    )
