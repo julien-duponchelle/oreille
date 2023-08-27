@@ -1,6 +1,7 @@
 import openai
 from pydub import AudioSegment
 from tempfile import NamedTemporaryFile
+from openai.openai_object import OpenAIObject
 
 
 def transcribe(model, audio_file, response_format="json", audio_format="wav", **kwargs):
@@ -31,10 +32,15 @@ def transcribe(model, audio_file, response_format="json", audio_format="wav", **
 
 
 def _export(transcript, response_format):
-    if response_format is None or response_format == "json":
-        return
+    if transcript is None:
+        return None # TODO What to return ?
+    elif response_format is None or response_format == "json":
+        return transcript # TODO aggregate JSON
+    elif response_format == "verbose_json":
+        return transcript
     elif response_format == "text":
-        return transcript.text
+        # TODO: Remove segments
+        return transcript
     else:
         raise NotImplementedError(
             f"{response_format} is not a supported format")
@@ -45,9 +51,16 @@ def _slice(model, audio, audio_format, chunk_duration, **kwargs):
         with NamedTemporaryFile(suffix="." + audio_format) as export:
             slice.export(export, format=audio_format)
             export.seek(0)
-            yield openai.Audio.transcribe(model, export, **kwargs)
+            yield openai.Audio.transcribe(model, export, response_format="verbose_json", **kwargs)
 
 
 def _merge(o1, o2):
-    o1.text += " " + o2.text
-    return o1
+    result = OpenAIObject(
+        response_ms=o1.response_ms + o2.response_ms,
+        task="transcribe",
+    )
+    #result.duration = o1.duration + o2.duration
+    result.text = o1.text + " " + o2.text
+    #result.language = o1.language
+    #TODO Merge segments
+    return result

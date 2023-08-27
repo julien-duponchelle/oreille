@@ -6,8 +6,9 @@ import pytest
 import pydub
 import openai
 from openai.openai_object import OpenAIObject
+from unittest.mock import ANY
 
-from ecoute import ecoute
+import ecoute
 
 
 @pytest.fixture
@@ -16,10 +17,9 @@ def empty_audio(tmp_path, scope="module"):
     An empty audio file
     """
     with open(tmp_path / "empty.wav", "wb+") as f:
-        empty_audio = pydub.AudioSegment.empty()
+        empty_audio = pydub.AudioSegment.silent(1)
         empty_audio.export(f, format="wav")
     return tmp_path / "empty.wav"
-
 
 @pytest.fixture
 def long_empty_audio(tmp_path, scope="module"):
@@ -31,32 +31,34 @@ def long_empty_audio(tmp_path, scope="module"):
         empty_audio.export(f, format="wav")
     return tmp_path / "long_empty.wav"
 
-
-def test_transcribe_json(mocker, empty_audio):
+@pytest.fixture
+def openai_object():
     result = OpenAIObject(response_ms=100)
     result.text = "Hello World"
+    return result
 
-    mocker.patch("openai.Audio.transcribe", return_value=result)
+def test_transcribe_verbose_json(mocker, empty_audio, openai_object):
+    mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
     transcribe = ecoute.transcribe(
-        "whisper-1", empty_audio, response_format="json")
+        "whisper-1", empty_audio, response_format="verbose_json")
 
     openai.Audio.transcribe.assert_called_with(
-        "whisper-1", empty_audio, response_format="json")
+        "whisper-1", ANY, response_format="verbose_json")
     assert transcribe.text == "Hello World"
-    assert result.response_ms == 100
+    assert transcribe.response_ms == 100
 
 
-def test_transcribe_text(mocker, empty_audio):
-    mocker.patch("openai.Audio.transcribe", return_value="Hello World")
+def test_transcribe_text(mocker, empty_audio, openai_object):
+    mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
     transcribe = ecoute.transcribe(
         "whisper-1", empty_audio, response_format="text")
 
     openai.Audio.transcribe.assert_called_with(
-        "whisper-1", empty_audio, response_format="text")
-    assert transcribe == "Hello World"
-
+        "whisper-1", ANY, response_format="verbose_json")
+    assert transcribe.text == "Hello World"
+    assert transcribe.response_ms == 100
 
 def test_transcribe_text_long(mocker, long_empty_audio):
     o1 = OpenAIObject(response_ms=100)
@@ -68,4 +70,5 @@ def test_transcribe_text_long(mocker, long_empty_audio):
     transcribe = ecoute.transcribe(
         "whisper-1", long_empty_audio, response_format="text")
 
-    assert transcribe == "Hello World Bonjour le monde"
+    assert transcribe.text == "Hello World Bonjour le monde"
+    assert transcribe.response_ms == 300
