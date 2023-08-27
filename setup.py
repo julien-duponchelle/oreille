@@ -4,12 +4,6 @@
 
 from setuptools import setup, find_packages
 
-with open("README.rst") as readme_file:
-    readme = readme_file.read()
-
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
-
 requirements = ["openai", "pydub"]
 
 setup_requirements = [
@@ -41,7 +35,7 @@ setup(
     description="Écoute is a wrapper on OpenAPI Whisper API. It's provide support for long audio files.",
     install_requires=requirements,
     license="Apache Software License 2.0",
-    long_description=readme + "\n\n" + history,
+    long_description="OpenAPI Whisper support only files that are less than 25 MB. Écoute will break the audio file into chunks of 25 MB's or less.\n\nhttps://platform.openai.com/docs/guides/speech-to-text/longer-inputs\nÉcoute will also compute the correct timing of the subtitle when merging the output of Whisper. So once you export the subtitle the timestamp of the subtitle will be right.\n You can open and save WAV files with pure python. For opening and saving non-wav files – like mp3 – you'll need ffmpeg or libav.",
     include_package_data=True,
     keywords="ecoute",
     name="ecoute",
@@ -50,6 +44,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/julien-duponchelle/ecoute",
-    version="0.1.0",
+    version="0.1.1",
     zip_safe=False,
 )
