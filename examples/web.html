@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web</title>  
+
+    </head>
+    <body >
+        <video id="video" width="640" height="480" id="player" controls>
+            <source src="17309-25.08.2023-ITEMA_23466799-2023F28653S0237-22.mp3" type="audio/mpeg" />
+            <track src="web.vtt" kind="subtitles" srclang="en" label="English" default />
+        </video>
+    <script>
+        var video = document.getElementById('video');
+        // Make sure the subtle is visible by default
+        video.textTracks[0].mode = 'showing';
+    </script>
+    </body>
+</html>

@@ -35,25 +35,27 @@ def transcribe(model, audio_file, response_format="json", audio_format="wav", **
 
 def _export(transcript, response_format):
     if transcript is None:
-        return None # TODO What to return ?
+        return None  # TODO What to return ?
     elif response_format is None or response_format == "json":
-        return transcript # TODO aggregate JSON
+        return transcript  # TODO aggregate JSON
     elif response_format == "verbose_json":
         return transcript
     elif response_format == "text":
-        # TODO: Remove segments
-        return transcript
+        return transcript.text
+    elif response_format == "vtt":
+        return segments_to_vtt(transcript.segments)
     else:
-        raise NotImplementedError(
-            f"{response_format} is not a supported format")
+        raise NotImplementedError(f"{response_format} is not a supported format")
 
 
 def _slice(model, audio, audio_format, chunk_duration, **kwargs):
-    for slice in audio[::chunk_duration * 1000]:
+    for slice in audio[:: chunk_duration * 1000]:
         with NamedTemporaryFile(suffix="." + audio_format) as export:
             slice.export(export, format=audio_format)
             export.seek(0)
-            yield openai.Audio.transcribe(model, export, response_format="verbose_json", **kwargs)
+            yield openai.Audio.transcribe(
+                model, export, response_format="verbose_json", **kwargs
+            )
 
 
 def _merge(o1, o2, timing):
@@ -61,10 +63,8 @@ def _merge(o1, o2, timing):
         response_ms=o1.response_ms + o2.response_ms,
         task="transcribe",
     )
-    #result.duration = o1.duration + o2.duration
     result.text = o1.text + " " + o2.text
-    #result.language = o1.language
-    if hasattr(o1, 'segments'):
+    if hasattr(o1, "segments"):
         segments = list(o1.segments)
         if len(segments) == 0:
             id = 0
@@ -78,3 +78,24 @@ def _merge(o1, o2, timing):
             segments.append(segment)
         result.segments = segments
     return result
+
+
+def segments_to_vtt(segments):
+    """
+    Convert a list of segments to a VTT text
+
+    :param list segments: list of OpenAI segments
+    :return str: VTT text
+    """
+    out = "WEBVTT\n\n"
+    for segment in segments:
+        out += f"{segment['id']}\n"
+        out += f"{_seconds_to_vtt_time(segment['start'])} --> {_seconds_to_vtt_time(segment['end'])}\n"
+        out += f"{segment['text']}\n\n"
+
+    return out
+
+
+def _seconds_to_vtt_time(seconds):
+    # Output format: 00:00:00.000
+    return f"{int(seconds // 3600):02}:{int(seconds // 60):02}:{(seconds % 60):06.3f}"

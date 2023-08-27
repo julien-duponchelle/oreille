@@ -8,7 +8,7 @@ import openai
 from openai.openai_object import OpenAIObject
 from unittest.mock import ANY
 
-import ecoute
+from ecoute import ecoute
 
 
 @pytest.fixture
@@ -48,22 +48,23 @@ def openai_object():
             "temperature": 0.0,
             "avg_logprob": -0.32106150751528534,
             "compression_ratio": 0.9402985074626866,
-            "no_speech_prob": 0.03250369429588318
+            "no_speech_prob": 0.03250369429588318,
         },
         {
             "id": 1,
             "seek": 0,
             "start": 2.9,
             "end": 3.5,
-            "text": "World",
+            "text": "world",
             "tokens": [50364, 8257, 53],
             "temperature": 0.0,
             "avg_logprob": -0.32106150751528534,
             "compression_ratio": 0.9402985074626866,
-            "no_speech_prob": 0.03250369429588318
-        }
+            "no_speech_prob": 0.03250369429588318,
+        },
     ]
     return result
+
 
 @pytest.fixture
 def openai_object2():
@@ -80,7 +81,7 @@ def openai_object2():
             "temperature": 0.0,
             "avg_logprob": -0.32106150751528534,
             "compression_ratio": 0.9402985074626866,
-            "no_speech_prob": 0.03250369429588318
+            "no_speech_prob": 0.03250369429588318,
         },
         {
             "id": 1,
@@ -92,8 +93,8 @@ def openai_object2():
             "temperature": 0.0,
             "avg_logprob": -0.32106150751528534,
             "compression_ratio": 0.9402985074626866,
-            "no_speech_prob": 0.03250369429588318
-        }
+            "no_speech_prob": 0.03250369429588318,
+        },
     ]
     return result
 
@@ -102,23 +103,29 @@ def test_transcribe_verbose_json(mocker, empty_audio, openai_object):
     mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
     transcribe = ecoute.transcribe(
-        "whisper-1", empty_audio, response_format="verbose_json")
+        "whisper-1", empty_audio, response_format="verbose_json"
+    )
 
     openai.Audio.transcribe.assert_called_with(
-        "whisper-1", ANY, response_format="verbose_json")
+        "whisper-1", ANY, response_format="verbose_json"
+    )
     assert transcribe.text == "Hello World"
     assert transcribe.response_ms == 100
-    assert transcribe.segments == openai_object
+    assert transcribe.segments == openai_object.segments
 
 
-def test_transcribe_verbose_json_long(mocker, long_empty_audio, openai_object, openai_object2):
+def test_transcribe_verbose_json_long(
+    mocker, long_empty_audio, openai_object, openai_object2
+):
     mocker.patch("openai.Audio.transcribe", side_effect=[openai_object, openai_object2])
 
     transcribe = ecoute.transcribe(
-        "whisper-1", long_empty_audio, response_format="verbose_json")
+        "whisper-1", long_empty_audio, response_format="verbose_json"
+    )
 
     openai.Audio.transcribe.assert_called_with(
-        "whisper-1", ANY, response_format="verbose_json")
+        "whisper-1", ANY, response_format="verbose_json"
+    )
     assert transcribe.text == "Hello World Bonjour le monde"
     assert transcribe.response_ms == 300
     assert len(transcribe.segments) == 4
@@ -136,13 +143,12 @@ def test_transcribe_verbose_json_long(mocker, long_empty_audio, openai_object, o
 def test_transcribe_text(mocker, empty_audio, openai_object):
     mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
-    transcribe = ecoute.transcribe(
-        "whisper-1", empty_audio, response_format="text")
+    transcribe = ecoute.transcribe("whisper-1", empty_audio, response_format="text")
 
     openai.Audio.transcribe.assert_called_with(
-        "whisper-1", ANY, response_format="verbose_json")
-    assert transcribe.text == "Hello World"
-    assert transcribe.response_ms == 100
+        "whisper-1", ANY, response_format="verbose_json"
+    )
+    assert transcribe == "Hello World"
 
 
 def test_transcribe_text_long(mocker, long_empty_audio):
@@ -153,7 +159,40 @@ def test_transcribe_text_long(mocker, long_empty_audio):
     mocker.patch("openai.Audio.transcribe", side_effect=[o1, o2])
 
     transcribe = ecoute.transcribe(
-        "whisper-1", long_empty_audio, response_format="text")
+        "whisper-1", long_empty_audio, response_format="text"
+    )
 
-    assert transcribe.text == "Hello World Bonjour le monde"
-    assert transcribe.response_ms == 300
+    assert transcribe == "Hello World Bonjour le monde"
+
+
+def test_segment_to_vtt(openai_object):
+    segments = [
+        {
+            "id": 0,
+            "start": 0.0,
+            "end": 2.8000000000000003,
+            "text": "Hello World",
+        },
+        {
+            "id": 1,
+            "start": 2.9,
+            "end": 3.5,
+            "text": "Bonjour le monde",
+        },
+    ]
+
+    vtt = ecoute.segments_to_vtt(segments)
+    assert (
+        vtt
+        == """WEBVTT
+
+0
+00:00:00.000 --> 00:00:02.800
+Hello World
+
+1
+00:00:02.900 --> 00:00:03.500
+Bonjour le monde
+
+"""
+    )
