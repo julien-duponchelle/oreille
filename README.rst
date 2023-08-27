@@ -35,6 +35,9 @@ You need to set your OPENAI_API_KEY environment variable first.
         export OPENAI_API_KEY=sk-xxxxx
         pip install ecoute
 
+
+Then you can use it like this:
+
 .. code-block:: python
         
         import ecoute
