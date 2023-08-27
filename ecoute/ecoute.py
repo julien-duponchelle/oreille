@@ -21,13 +21,15 @@ def transcribe(model, audio_file, response_format="json", audio_format="wav", **
     chunk_duration = 10 * 60
 
     result = None
+    timing = 0
     for slice in _slice(model, audio, audio_format, chunk_duration, **kwargs):
         if slice is None:
             break
         if result is None:
             result = slice
         else:
-            result = _merge(result, slice)
+            result = _merge(result, slice, timing)
+        timing += chunk_duration
     return _export(result, response_format)
 
 
@@ -54,7 +56,7 @@ def _slice(model, audio, audio_format, chunk_duration, **kwargs):
             yield openai.Audio.transcribe(model, export, response_format="verbose_json", **kwargs)
 
 
-def _merge(o1, o2):
+def _merge(o1, o2, timing):
     result = OpenAIObject(
         response_ms=o1.response_ms + o2.response_ms,
         task="transcribe",
@@ -62,5 +64,17 @@ def _merge(o1, o2):
     #result.duration = o1.duration + o2.duration
     result.text = o1.text + " " + o2.text
     #result.language = o1.language
-    #TODO Merge segments
+    if hasattr(o1, 'segments'):
+        segments = list(o1.segments)
+        if len(segments) == 0:
+            id = 0
+        else:
+            id = segments[-1]["id"] + 1
+        for segment in o2.segments:
+            segment["id"] = id
+            segment["start"] += timing
+            segment["end"] += timing
+            id += 1
+            segments.append(segment)
+        result.segments = segments
     return result
