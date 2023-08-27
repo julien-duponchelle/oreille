@@ -23,8 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install .
-          pip install pytest
+          pip install -r requirements_dev.txt
 
       - name: Run test suite
         run: |
