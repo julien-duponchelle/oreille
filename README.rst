@@ -25,7 +25,25 @@ Features
 
 * Drop-in replacement to the OpenAPI *openai.Audio.transcribe*
 * Support for large audio file
+* Export as text, srt, vtt, json
 
+Usage
+-----
+
+You need to set your OPENAI_API_KEY environment variable first.
+
+.. code-block:: bash
+    export OPENAI_API_KEY=sk-xxxxx
+    pip install ecoute
+
+.. code-block:: python
+        import ecoute
+
+        print(ecoute.transcribe("whisper-1", open("examples/test.wav", "rb"), language="fr",
+                prompt="Test son", response_format="verbose_json", audio_format="wav"))
+
+
+See more examples in the examples directory.
 
 FAQ
 ----
@@ -41,10 +59,3 @@ Do I need to write Écoute with the accent?
 No, it's the correct spelling but you can write Écoute, it's easier to type.
 
 
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
