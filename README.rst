@@ -31,15 +31,16 @@ Usage
 You need to set your OPENAI_API_KEY environment variable first.
 
 .. code-block:: bash
-    export OPENAI_API_KEY=sk-xxxxx
-    pip install ecoute
+        
+        export OPENAI_API_KEY=sk-xxxxx
+        pip install ecoute
 
 .. code-block:: python
+        
         import ecoute
 
         print(ecoute.transcribe("whisper-1", open("examples/test.wav", "rb"), language="fr",
                 prompt="Test son", response_format="verbose_json", audio_format="wav"))
-
 
 See more examples in the examples directory.
 
