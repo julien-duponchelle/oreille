@@ -38,4 +38,6 @@ def segments_to_srt(segments):
 def _seconds_to_srt_time(seconds):
     # Output format: 00:00:00,000
     # The comma is used to separate the fractional part from the integer part of the second.
-    return f"{int(seconds // 3600):02}:{int(seconds // 60):02}:{(seconds % 60):06.3f}".replace('.', ',')
+    return f"{int(seconds // 3600):02}:{int(seconds // 60):02}:{(seconds % 60):06.3f}".replace(
+        ".", ","
+    )

@@ -35,6 +35,7 @@ def openai_object():
     ]
     return result
 
+
 def test_segment_to_vtt(openai_object):
     segments = [
         {
@@ -66,6 +67,7 @@ Bonjour le monde
 
 """
     )
+
 
 def test_segment_to_srt(openai_object):
     segments = [

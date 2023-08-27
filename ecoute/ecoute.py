@@ -81,4 +81,3 @@ def _merge(o1, o2, timing):
             segments.append(segment)
         result.segments = segments
     return result
-

@@ -1,4 +1,4 @@
-# 
+#
 # Export the text to a web page with a player supporting the subtiles.
 #
 # Run a python server in the examples folder:
@@ -9,13 +9,28 @@
 import ecoute
 
 print("Processing wav")
-print(ecoute.transcribe("whisper-1", open("examples/test.wav", "rb"), language="fr",
-      prompt="Test son", response_format="verbose_json", audio_format="wav"))
+print(
+    ecoute.transcribe(
+        "whisper-1",
+        open("examples/test.wav", "rb"),
+        language="fr",
+        prompt="Test son",
+        response_format="verbose_json",
+        audio_format="wav",
+    )
+)
 
 
-transcribe = ecoute.transcribe("whisper-1", open("examples/test.wav", "rb"), language="fr", prompt="Test son", response_format="vtt", audio_format="wav")
+transcribe = ecoute.transcribe(
+    "whisper-1",
+    open("examples/test.wav", "rb"),
+    language="fr",
+    prompt="Test son",
+    response_format="vtt",
+    audio_format="wav",
+)
 
-with open('examples/web.vtt','w+') as f:
+with open("examples/web.vtt", "w+") as f:
     f.write(transcribe)
 
 print("Exported to web.vtt")
