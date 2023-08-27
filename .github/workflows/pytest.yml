@@ -1,0 +1,31 @@
+name: PyTest
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: 'CPython 3.11', python: '3.11'}
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies
+        run: |
+          pip install .
+          pip install pytest
+
+      - name: Run test suite
+        run: |
+          pytest
