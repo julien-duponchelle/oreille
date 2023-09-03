@@ -1,1 +1,1 @@
-"""Unit test package for ecoute."""
+"""Unit test package for oreille."""

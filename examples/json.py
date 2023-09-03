@@ -1,8 +1,8 @@
-import ecoute
+import oreille
 
 print("Processing wav")
 print(
-    ecoute.transcribe(
+    oreille.transcribe(
         "whisper-1",
         open("examples/test.wav", "rb"),
         language="fr",

@@ -1,5 +1,5 @@
 import pytest
-import ecoute.export
+import oreille.export
 from openai.openai_object import OpenAIObject
 
 
@@ -52,7 +52,7 @@ def test_segment_to_vtt(openai_object):
         },
     ]
 
-    vtt = ecoute.export.segments_to_vtt(segments)
+    vtt = oreille.export.segments_to_vtt(segments)
     assert (
         vtt
         == """WEBVTT
@@ -85,7 +85,7 @@ def test_segment_to_srt(openai_object):
         },
     ]
 
-    vtt = ecoute.export.segments_to_srt(segments)
+    vtt = oreille.export.segments_to_srt(segments)
     assert (
         vtt
         == """0

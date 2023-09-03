@@ -1,4 +1,4 @@
-* Écoute version:
+* Oreille version:
 * Python version:
 * Operating System:
 

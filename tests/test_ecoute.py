@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Tests for `ecoute` package."""
+"""Tests for `oreille` package."""
 
 import pytest
 import pydub
@@ -8,7 +8,7 @@ import openai
 from openai.openai_object import OpenAIObject
 from unittest.mock import ANY
 
-from ecoute import ecoute
+from oreille import oreille
 
 
 @pytest.fixture
@@ -102,7 +102,7 @@ def openai_object2():
 def test_transcribe_verbose_json(mocker, empty_audio, openai_object):
     mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
-    transcribe = ecoute.transcribe(
+    transcribe = oreille.transcribe(
         "whisper-1", empty_audio, response_format="verbose_json"
     )
 
@@ -119,7 +119,7 @@ def test_transcribe_verbose_json_long(
 ):
     mocker.patch("openai.Audio.transcribe", side_effect=[openai_object, openai_object2])
 
-    transcribe = ecoute.transcribe(
+    transcribe = oreille.transcribe(
         "whisper-1", long_empty_audio, response_format="verbose_json"
     )
 
@@ -143,7 +143,8 @@ def test_transcribe_verbose_json_long(
 def test_transcribe_text(mocker, empty_audio, openai_object):
     mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
-    transcribe = ecoute.transcribe("whisper-1", empty_audio, response_format="text")
+    transcribe = oreille.transcribe(
+        "whisper-1", empty_audio, response_format="text")
 
     openai.Audio.transcribe.assert_called_with(
         "whisper-1", ANY, response_format="verbose_json"
@@ -158,7 +159,7 @@ def test_transcribe_text_long(mocker, long_empty_audio):
     o2.text = "Bonjour le monde"
     mocker.patch("openai.Audio.transcribe", side_effect=[o1, o2])
 
-    transcribe = ecoute.transcribe(
+    transcribe = oreille.transcribe(
         "whisper-1", long_empty_audio, response_format="text"
     )
 

@@ -2,6 +2,10 @@
 History
 =======
 
+0.1.3 (2023-09-03)
+
+* Change name from Écoute to Oreille to avoid a conflict with another existing project
+
 0.1.2 (2023-08-27)
 ------------------
 
