@@ -143,8 +143,7 @@ def test_transcribe_verbose_json_long(
 def test_transcribe_text(mocker, empty_audio, openai_object):
     mocker.patch("openai.Audio.transcribe", return_value=openai_object)
 
-    transcribe = oreille.transcribe(
-        "whisper-1", empty_audio, response_format="text")
+    transcribe = oreille.transcribe("whisper-1", empty_audio, response_format="text")
 
     openai.Audio.transcribe.assert_called_with(
         "whisper-1", ANY, response_format="verbose_json"
