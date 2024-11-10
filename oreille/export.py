@@ -7,9 +7,9 @@ def segments_to_vtt(segments):
     """
     out = "WEBVTT\n\n"
     for segment in segments:
-        out += f"{segment['id']}\n"
-        out += f"{_seconds_to_vtt_time(segment['start'])} --> {_seconds_to_vtt_time(segment['end'])}\n"
-        out += f"{segment['text']}\n\n"
+        out += f"{segment.id}\n"
+        out += f"{_seconds_to_vtt_time(segment.start)} --> {_seconds_to_vtt_time(segment.end)}\n"
+        out += f"{segment.text}\n\n"
 
     return out
 
@@ -28,9 +28,9 @@ def segments_to_srt(segments):
     """
     out = ""
     for segment in segments:
-        out += f"{segment['id']}\n"
-        out += f"{_seconds_to_srt_time(segment['start'])} --> {_seconds_to_srt_time(segment['end'])}\n"
-        out += f"{segment['text']}\n\n"
+        out += f"{segment.id}\n"
+        out += f"{_seconds_to_srt_time(segment.start)} --> {_seconds_to_srt_time(segment.end)}\n"
+        out += f"{segment.text}\n\n"
 
     return out
 

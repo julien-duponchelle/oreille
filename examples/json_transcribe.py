@@ -1,10 +1,15 @@
+import openai
+
 import oreille
+
+client = openai.OpenAI()
 
 print("Processing wav")
 print(
     oreille.transcribe(
-        "whisper-1",
-        open("examples/test.wav", "rb"),
+        client,
+        file=open("examples/test.wav", "rb"),
+        model="whisper-1",
         language="fr",
         prompt="Test son",
         response_format="verbose_json",

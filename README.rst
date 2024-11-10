@@ -21,7 +21,7 @@ You can open and save WAV files with pure python. For opening and saving non-wav
 Features
 --------
 
-* Drop-in replacement to the OpenAPI *openai.Audio.transcribe*
+* Mostly Drop-in replacement to the OpenAPI *audio.transcriptions.create*
 * Support for large audio file
 * Export as text, srt, vtt, json
 
@@ -40,10 +40,24 @@ Then you can use it like this:
 
 .. code-block:: python
         
+        import openai
+
         import oreille
 
-        print(oreille.transcribe("whisper-1", open("examples/test.wav", "rb"), language="fr",
-                prompt="Test son", response_format="verbose_json", audio_format="wav"))
+        client = openai.OpenAI()
+
+        print("Processing wav")
+        print(
+        oreille.transcribe(
+                client,
+                file=open("examples/test.wav", "rb"),
+                model="whisper-1",
+                language="fr",
+                prompt="Test son",
+                response_format="verbose_json",
+                audio_format="wav",
+        )
+        )
 
 See more examples in the examples directory.
 

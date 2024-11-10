@@ -6,13 +6,17 @@
 # Open http://localhost:9000/web.html in a browser to see the result.
 
 
+import openai
+
 import oreille
 
+client = openai.OpenAI()
 print("Processing wav")
 print(
     oreille.transcribe(
-        "whisper-1",
-        open("examples/test.wav", "rb"),
+        client,
+        model="whisper-1",
+        file=open("examples/test.wav", "rb"),
         language="fr",
         prompt="Test son",
         response_format="verbose_json",
@@ -22,8 +26,9 @@ print(
 
 
 transcribe = oreille.transcribe(
-    "whisper-1",
-    open("examples/test.wav", "rb"),
+    client,
+    file=open("examples/test.wav", "rb"),
+    model="whisper-1",
     language="fr",
     prompt="Test son",
     response_format="vtt",

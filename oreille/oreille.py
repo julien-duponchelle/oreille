@@ -1,15 +1,18 @@
-import openai
-from pydub import AudioSegment
 from tempfile import NamedTemporaryFile
-from openai.openai_object import OpenAIObject
-from .export import segments_to_vtt, segments_to_srt
+
+import openai
+from openai.types.audio.transcription_verbose import TranscriptionVerbose
+from pydub import AudioSegment
+
+from .export import segments_to_srt, segments_to_vtt
 
 
-def transcribe(model, audio_file, response_format="json", audio_format="wav", **kwargs):
+def transcribe(client: openai.OpenAI, file, model="whisper-1",  response_format="json", audio_format="wav", **kwargs):
     """
     Transcribe the audio content to text.
-    All arguments of openai.Audio.transcribe are supported
+    Same arguments as client.audio.transcriptions.create
 
+    :param client: OpenAI client
     :param file: The audio file object (not file name) to transcribe, in one of these formats: mp3, mp4, mpeg, mpga, m4a, wav, or webm.
     :param model: ID of the model to use.
     :param prompt: An optional text to guide the model's style or continue a previous audio segment. The prompt should match the audio language.
@@ -17,13 +20,13 @@ def transcribe(model, audio_file, response_format="json", audio_format="wav", **
     :param language: The language of the input audio. Supplying the input language in ISO-639-1 format will improve accuracy and latency.
     :param audio_format: The audio file format (mp3, wav, ...) default to wav, othert format require ffmpeg for other formats than wav
     """
-    audio = AudioSegment.from_file(audio_file, format=audio_format)
+    audio = AudioSegment.from_file(file, format=audio_format)
 
     chunk_duration = 10 * 60
 
     result = None
     timing = 0
-    for slice in _slice(model, audio, audio_format, chunk_duration, **kwargs):
+    for slice in _slice(client, model, audio, audio_format, chunk_duration, **kwargs):
         if slice is None:
             break
         if result is None:
@@ -51,32 +54,35 @@ def _export(transcript, response_format):
         raise NotImplementedError(f"{response_format} is not a supported format")
 
 
-def _slice(model, audio, audio_format, chunk_duration, **kwargs):
+def _slice(client: openai.OpenAI, model, audio, audio_format, chunk_duration, **kwargs):
     for slice in audio[:: chunk_duration * 1000]:
         with NamedTemporaryFile(suffix="." + audio_format) as export:
             slice.export(export, format=audio_format)
             export.seek(0)
-            yield openai.Audio.transcribe(
-                model, export, response_format="verbose_json", **kwargs
+            yield client.audio.transcriptions.create(
+                file=export.file, model=model, response_format="verbose_json", **kwargs
             )
 
 
 def _merge(o1, o2, timing):
-    result = OpenAIObject(
-        response_ms=o1.response_ms + o2.response_ms,
-        task="transcribe",
+    result = TranscriptionVerbose(
+        language=o1.language,
+        text=o1.text + " " + o2.text,
+        duration=o1.duration
     )
-    result.text = o1.text + " " + o2.text
-    if hasattr(o1, "segments"):
+    result.duration = str(float(o1.duration) + float(o2.duration))
+    # Merge duration
+    # merge words
+    if o1.segments:
         segments = list(o1.segments)
         if len(segments) == 0:
             id = 0
         else:
-            id = segments[-1]["id"] + 1
+            id = segments[-1].id + 1
         for segment in o2.segments:
-            segment["id"] = id
-            segment["start"] += timing
-            segment["end"] += timing
+            segment.id = id
+            segment.start += timing
+            segment.end += timing
             id += 1
             segments.append(segment)
         result.segments = segments
