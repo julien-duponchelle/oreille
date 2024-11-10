@@ -7,7 +7,14 @@ from pydub import AudioSegment
 from .export import segments_to_srt, segments_to_vtt
 
 
-def transcribe(client: openai.OpenAI, file, model="whisper-1",  response_format="json", audio_format="wav", **kwargs):
+def transcribe(
+    client: openai.OpenAI,
+    file,
+    model="whisper-1",
+    response_format="json",
+    audio_format="wav",
+    **kwargs,
+):
     """
     Transcribe the audio content to text.
     Same arguments as client.audio.transcriptions.create
@@ -66,9 +73,7 @@ def _slice(client: openai.OpenAI, model, audio, audio_format, chunk_duration, **
 
 def _merge(o1, o2, timing):
     result = TranscriptionVerbose(
-        language=o1.language,
-        text=o1.text + " " + o2.text,
-        duration=o1.duration
+        language=o1.language, text=o1.text + " " + o2.text, duration=o1.duration
     )
     result.duration = str(float(o1.duration) + float(o2.duration))
     # Merge duration

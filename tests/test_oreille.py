@@ -48,28 +48,28 @@ def openai_object():
     )
     result.segments = [
         TranscriptionSegment(
-            id= 0,
-            seek= 0,
-            start= 0.0,
-            end= 2.8000000000000003,
-            text= "Hello",
-            tokens= [50364, 8257, 53],
-            temperature= 0.0,
-            avg_logprob= -0.32106150751528534,
-            compression_ratio= 0.9402985074626866,
-            no_speech_prob= 0.03250369429588318,
+            id=0,
+            seek=0,
+            start=0.0,
+            end=2.8000000000000003,
+            text="Hello",
+            tokens=[50364, 8257, 53],
+            temperature=0.0,
+            avg_logprob=-0.32106150751528534,
+            compression_ratio=0.9402985074626866,
+            no_speech_prob=0.03250369429588318,
         ),
         TranscriptionSegment(
-            id= 1,
-            seek= 0,
-            start= 2.9,
-            end= 3.5,
-            text= "world",
-            tokens= [50364, 8257, 53],
-            temperature= 0.0,
-            avg_logprob= -0.32106150751528534,
-            compression_ratio= 0.9402985074626866,
-            no_speech_prob= 0.03250369429588318,
+            id=1,
+            seek=0,
+            start=2.9,
+            end=3.5,
+            text="world",
+            tokens=[50364, 8257, 53],
+            temperature=0.0,
+            avg_logprob=-0.32106150751528534,
+            compression_ratio=0.9402985074626866,
+            no_speech_prob=0.03250369429588318,
         ),
     ]
     return result
@@ -84,28 +84,28 @@ def openai_object2():
     )
     result.segments = [
         TranscriptionSegment(
-            id= 0,
-            seek= 0,
-            start= 0.0,
-            end= 2.8000000000000003,
-            text= "Bonjour",
-            tokens= [50364, 8257, 53],
-            temperature= 0.0,
-            avg_logprob= -0.32106150751528534,
-            compression_ratio= 0.9402985074626866,
-            no_speech_prob= 0.03250369429588318,
+            id=0,
+            seek=0,
+            start=0.0,
+            end=2.8000000000000003,
+            text="Bonjour",
+            tokens=[50364, 8257, 53],
+            temperature=0.0,
+            avg_logprob=-0.32106150751528534,
+            compression_ratio=0.9402985074626866,
+            no_speech_prob=0.03250369429588318,
         ),
         TranscriptionSegment(
-            id= 1,
-            seek= 0,
-            start= 2.9,
-            end= 3.5,
-            text= "le monde",
-            tokens= [50364, 8257, 53],
-            temperature= 0.0,
-            avg_logprob= -0.32106150751528534,
-            compression_ratio= 0.9402985074626866,
-            no_speech_prob= 0.03250369429588318,
+            id=1,
+            seek=0,
+            start=2.9,
+            end=3.5,
+            text="le monde",
+            tokens=[50364, 8257, 53],
+            temperature=0.0,
+            avg_logprob=-0.32106150751528534,
+            compression_ratio=0.9402985074626866,
+            no_speech_prob=0.03250369429588318,
         ),
     ]
     return result
@@ -114,9 +114,7 @@ def openai_object2():
 def test_transcribe_verbose_json(openai_client, mocker, empty_audio, openai_object):
     openai_client.audio.transcriptions.create.return_value = openai_object
     transcribe = oreille.transcribe(
-        openai_client,
-        empty_audio,
-        "whisper-1", response_format="verbose_json"
+        openai_client, empty_audio, "whisper-1", response_format="verbose_json"
     )
 
     assert isinstance(transcribe, TranscriptionVerbose)
@@ -125,13 +123,19 @@ def test_transcribe_verbose_json(openai_client, mocker, empty_audio, openai_obje
     assert transcribe.duration == "10"
 
 
-def test_transcribe_verbose_json_long(openai_client,
-    mocker, long_empty_audio, openai_object, openai_object2
+def test_transcribe_verbose_json_long(
+    openai_client, mocker, long_empty_audio, openai_object, openai_object2
 ):
-    openai_client.audio.transcriptions.create.side_effect = [openai_object, openai_object2]
+    openai_client.audio.transcriptions.create.side_effect = [
+        openai_object,
+        openai_object2,
+    ]
 
     transcribe = oreille.transcribe(
-        openai_client, long_empty_audio, model="whisper-1", response_format="verbose_json"
+        openai_client,
+        long_empty_audio,
+        model="whisper-1",
+        response_format="verbose_json",
     )
     assert isinstance(transcribe, TranscriptionVerbose)
     assert transcribe.text == "Hello World Bonjour le monde"
@@ -152,18 +156,19 @@ def test_transcribe_verbose_json_long(openai_client,
 def test_transcribe_text(openai_client, mocker, empty_audio, openai_object):
     openai_client.audio.transcriptions.create.return_value = openai_object
 
-    transcribe = oreille.transcribe(openai_client,  empty_audio, model="whisper-1", response_format="text")
+    transcribe = oreille.transcribe(
+        openai_client, empty_audio, model="whisper-1", response_format="text"
+    )
     assert transcribe == "Hello World"
 
 
 def test_transcribe_text_long(openai_client, mocker, long_empty_audio):
     o1 = TranscriptionVerbose(text="Hello World", duration="25", language="en")
     o2 = TranscriptionVerbose(text="Bonjour le monde", duration="15", language="fr")
-    openai_client.audio.transcriptions.create.side_effect=[o1, o2]
+    openai_client.audio.transcriptions.create.side_effect = [o1, o2]
 
     transcribe = oreille.transcribe(
-        openai_client,
-        long_empty_audio, model="whisper-1", response_format="text"
+        openai_client, long_empty_audio, model="whisper-1", response_format="text"
     )
 
     assert transcribe == "Hello World Bonjour le monde"
