@@ -73,10 +73,8 @@ def _slice(client: openai.OpenAI, model, audio, audio_format, chunk_duration, **
 
 def _merge(o1, o2, timing):
     result = TranscriptionVerbose(
-        language=o1.language, text=o1.text + " " + o2.text, duration=o1.duration
+        language=o1.language, text=o1.text + " " + o2.text, duration=str(float(o1.duration) + float(o2.duration))
     )
-    result.duration = str(float(o1.duration) + float(o2.duration))
-    # Merge duration
     # merge words
     if o1.segments:
         segments = list(o1.segments)

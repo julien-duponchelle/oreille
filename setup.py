@@ -31,6 +31,8 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
     description="Oreille is a wrapper on OpenAPI Whisper API. It's provide support for long audio files.",
     install_requires=requirements,
@@ -44,6 +46,6 @@ setup(
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/julien-duponchelle/oreille",
-    version="0.2.0",
+    version="0.2.1",
     zip_safe=False,
 )

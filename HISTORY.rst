@@ -2,10 +2,15 @@
 History
 =======
 
+0.2.1 (2024-11-11)
+-------------------
+
+* Fix for some duration issues at merge
+
 0.2.0 (2024-11-10)
 -------------------
 
- * Support new OpenAI SDK
+* Support new OpenAI SDK
 
 0.1.4 (2023-09-12)
 -------------------
