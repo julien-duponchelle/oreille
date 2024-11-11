@@ -17,7 +17,8 @@
 			"extensions": [
 				"ms-python.vscode-pylance",
 				"LittleFoxTeam.vscode-python-test-adapter",
-				"ms-python.python"
+				"ms-python.python",
+				"charliermarsh.ruff"
 			]
 		}
 	}
